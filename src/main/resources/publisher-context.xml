@@ -1,0 +1,58 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:camel="http://camel.apache.org/schema/spring"
+       xmlns:akka="http://www.akkasource.org/schema/akka"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+        http://camel.apache.org/schema/spring
+        http://camel.apache.org/schema/spring/camel-spring-2.4.0.xsd
+        http://www.akkasource.org/schema/akka
+        http://scalablesolutions.se/akka/akka-0.10.xsd">
+
+  <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+    <property name="properties">
+      <props>
+        <prop key="broker">tcp://localhost:61616</prop>
+      </props>
+    </property>
+  </bean>
+
+  <!-- JMS Configuration -->
+  <bean id="jmsConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+    <property name="brokerURL" value="${broker}"/>
+  </bean>
+
+  <bean id="pooledConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory">
+    <property name="maxConnections" value="8"/>
+    <property name="maximumActive" value="500"/>
+    <property name="connectionFactory" ref="jmsConnectionFactory"/>
+  </bean>
+
+  <bean id="jmsConfig" class="org.apache.camel.component.jms.JmsConfiguration">
+    <property name="connectionFactory" ref="jmsConnectionFactory"/>
+    <property name="transacted" value="false"/>
+  </bean>
+
+  <bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
+    <property name="configuration" ref="jmsConfig"/>
+  </bean>
+
+  <camel:errorHandler id="deadLetterErrorHandler" type="DeadLetterChannel" deadLetterUri="log:dead">
+    <camel:redeliveryPolicy
+            maximumRedeliveries="2"
+            redeliveryDelay="1000"
+            logHandled="true"
+            asyncDelayedRedelivery="true"/>
+  </camel:errorHandler>
+
+  <camel:camelContext id="producer-context" errorHandlerRef="deadLetterErrorHandler">
+    <!-- ... -->
+  </camel:camelContext>
+
+  <!-- Akka -->
+  <akka:camel-service>
+    <akka:camel-context ref="producer-context"/>
+  </akka:camel-service>
+</beans>
