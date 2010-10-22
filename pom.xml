@@ -38,10 +38,6 @@
       <name>JBoss Maven2 Repository</name>
       <url>https://repository.jboss.org/nexus/content/groups/public</url>
     </repository>
-    <repository>
-      <id>akka-embbeded</id>
-      <url>file:///Users/leo/Documents/Source/akka/embedded-repo</url>
-    </repository>
   </repositories>
 
   <pluginRepositories>
@@ -94,17 +90,17 @@
     <dependency>
       <groupId>org.apache.activemq</groupId>
       <artifactId>activemq-core</artifactId>
-      <version>5.4.0</version>
+      <version>5.4.1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.activemq</groupId>
       <artifactId>activemq-camel</artifactId>
-      <version>5.4.0</version>
+      <version>5.4.1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.activemq</groupId>
       <artifactId>activemq-pool</artifactId>
-      <version>5.4.0</version>
+      <version>5.4.1</version>
     </dependency>
 
     <!-- logging -->
@@ -196,6 +192,18 @@
           </includes>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <mainClass>twimpact.akka.camel.AkkaCamelTest</mainClass>
+              <addClasspath>true</addClasspath>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
   <reporting>
@@ -215,27 +223,19 @@
       <id>executable-jar</id>
       <build>
         <plugins>
-          <!-- apparently, this is what's needed to construct a self-contained jar file -->
           <plugin>
-            <artifactId>maven-assembly-plugin</artifactId>
+            <artifactId>maven-dependency-plugin</artifactId>
             <executions>
               <execution>
-                <id>create-executable-jar</id>
+                <id>copy-dependencies</id>
                 <phase>package</phase>
                 <goals>
-                  <goal>single</goal>
+                  <goal>copy-dependencies</goal>
                 </goals>
                 <configuration>
-                  <descriptorRefs>
-                    <descriptorRef>
-                      jar-with-dependencies
-                    </descriptorRef>
-                  </descriptorRefs>
-                  <archive>
-                    <manifest>
-                      <mainClass>twimpact.akka.camel.AkkaCamelTest</mainClass>
-                    </manifest>
-                  </archive>
+                  <outputDirectory>${project.build.directory}</outputDirectory>
+                  <overWriteReleases>false</overWriteReleases>
+                  <overWriteSnapshots>true</overWriteSnapshots>
                 </configuration>
               </execution>
             </executions>

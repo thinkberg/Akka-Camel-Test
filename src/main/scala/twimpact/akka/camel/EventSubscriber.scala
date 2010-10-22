@@ -24,7 +24,7 @@ class EventSubscriber(name: String, uri: String) extends Actor with Consumer {
       message.body match {
         case ("MessageEvent", message: String) =>
           eventCounter = eventCounter + 1
-          Thread.sleep(5000) // simulate doing something
+          Thread.sleep(10) // simulate doing something
           if (eventCounter % EVENT_SKIP == 0) {
             val speed = EVENT_SKIP / ((System.currentTimeMillis - eventTime + 1) / 1000.0)
             print("\rCONSUMER: %d (%.0f events/s) %s".format(eventCounter, speed, message))
