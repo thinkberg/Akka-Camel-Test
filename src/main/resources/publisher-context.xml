@@ -6,7 +6,7 @@
         http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
         http://camel.apache.org/schema/spring
-        http://camel.apache.org/schema/spring/camel-spring-2.4.0.xsd
+        http://camel.apache.org/schema/spring/camel-spring.xsd
         http://www.akkasource.org/schema/akka
         http://scalablesolutions.se/akka/akka-0.10.xsd">
 
@@ -48,7 +48,14 @@
   </camel:errorHandler>
 
   <camel:camelContext id="producer-context" errorHandlerRef="deadLetterErrorHandler">
-    <!-- ... -->
+    <camel:route>
+      <camel:from uri="activemq:topic:ActiveMQ.Advisory.TempQueue?mapJmsMessage=false"/>
+      <camel:convertBodyTo type="java.lang.String"/>
+      <camel:transform>
+        <camel:simple>${in.body}&#13;</camel:simple>
+      </camel:transform>
+      <camel:to uri="file:.?fileExist=Append&amp;fileName=advisoryConnection-${date:now:yyyyMMdd}.txt"/>
+    </camel:route>
   </camel:camelContext>
 
   <!-- Akka -->
