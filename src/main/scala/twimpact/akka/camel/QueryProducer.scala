@@ -11,5 +11,5 @@ import se.scalablesolutions.akka.actor.Actor
 
 class QueryProducer extends Actor with Producer {
   self.timeout = 5 * 60 * 1000
-  def endpointUri = "activemq:queue:akka-camel-query-test"
+  def endpointUri = "activemq:queue:akka-camel-query-test?requestTimeout=300000"
 }
