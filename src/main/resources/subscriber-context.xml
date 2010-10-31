@@ -39,17 +39,18 @@
     <property name="configuration" ref="jmsConfig"/>
   </bean>
 
+  <!-- adding the error handler within the <camel:camelContext> tag does not work! -->
   <camel:errorHandler id="deadLetterErrorHandler" type="DeadLetterChannel" deadLetterUri="log:dead">
     <camel:redeliveryPolicy
             maximumRedeliveries="2"
             redeliveryDelay="1000"
             logHandled="true"
+            logStackTrace="false"
+            asyncDelayedRedelivery="true"
             />
-    <!--asyncDelayedRedelivery="true"-->
   </camel:errorHandler>
 
   <camel:camelContext id="subscriber-context" errorHandlerRef="deadLetterErrorHandler">
-    <!-- ... -->
   </camel:camelContext>
 
 

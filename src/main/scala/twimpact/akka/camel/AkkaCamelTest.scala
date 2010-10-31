@@ -5,7 +5,7 @@ import grizzled.slf4j.Logger
 import se.scalablesolutions.akka.actor.Actor
 
 /**
- * >>Describe Class<<
+ * A test for akka-camel to get a hand on how certain conditions are handled.
  *
  * @author Matthias L. Jugel
  */
